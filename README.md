@@ -17,3 +17,8 @@
 ### Tech
 
 React · TypeScript · Vite · Spring-style backend · MyBatis
+
+---
+### 📘 Latest Post
+[React로 공통코드 관리 페이지 만들기](posts/20251015-setcode-first-post.md)
+
