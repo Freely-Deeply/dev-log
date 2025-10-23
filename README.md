@@ -10,7 +10,7 @@
 
 ### About
 - React & Frontend Dev  
-- Daily learning log → [dev-log](https://github.com/Freely-Deeply/dev-log)
+- Weekly learning log → [dev-log](https://github.com/Freely-Deeply/dev-log)
 
 ### Tech
 React · TypeScript · Vite · Spring-style backend · MyBatis
