@@ -34,8 +34,8 @@ graph TD
   A[SetMeetRoom.jsx] --> B[Calendar.jsx]
   A --> C[ReservationModal.jsx]
   A --> D[useReservationFormValidation.js]
-  B --> E[getMeetRoomInfo() in meetroomApi.js]
-  C --> F[saveReservation() in meetroomApi.js]
+  B --> E["getMeetRoomInfo() in meetroomApi.js"]
+  C --> F["saveReservation() in meetroomApi.js"]
   F --> G[(axiosInstance.js)]
   G --> H[(Spring API /meetroom)]
 
