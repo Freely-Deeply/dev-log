@@ -1,0 +1,66 @@
+# 🧩 [회의실 예약 페이지] Props와 Callback으로 데이터 흐름 잡기
+
+**작성일:** 2025-11-04  
+**작성자:** freely-deeply
+
+---
+
+## 💡 들어가며
+
+지난 글에서는 회의실 예약 CRUD와 API 구조를 완성했다.  
+이번 주는 단순한 “기능 구현”을 넘어서 **React 컴포넌트 간 데이터 흐름(Props & Callback)**,  
+그리고 **FullCalendar 주간 뷰의 기간 헤더 표시 개선**을 중심으로 리팩토링을 진행했다.
+
+단순히 코드가 동작하는 수준이 아니라,  
+“어디에서 상태가 생성되고, 어디까지 전달되는지”를 시각적으로 이해한 주차였다.
+
+---
+
+## 1️⃣ 문제 상황 (현상)
+
+- 모달에서 예약 저장 후 캘린더가 자동 갱신되지 않음
+- props로 전달된 함수가 실행은 되는데, 부모의 데이터가 갱신되지 않음
+- 주간 뷰에서 ‘1주차’ 표기 대신, **기간(YYYY.MM.DD ~ YYYY.MM.DD)** 형태로 변경 요청
+
+---
+
+## 2️⃣ 원인 분석 (왜 이런 일이 생겼는가)
+
+1. `SetMeetRoomCalendar.jsx` → `SetMeetRoomModal.jsx` 간 데이터 흐름에서  
+   부모의 `loadReservations()`를 자식이 직접 호출할 방법이 없었음
+2. React의 데이터 흐름은 단방향이라,  
+   **자식이 부모의 함수를 실행하려면 props(callback)** 을 통해야 함
+3. 주간 뷰의 “1주차”는 FullCalendar의 `titleFormat`이 아닌  
+   커스텀 렌더 로직으로 주차 계산을 넣어둔 상태였는데,  
+   이 값이 `datesSet()` 이벤트와 충돌하면서 주간 기간 표시에 오류 발생
+
+---
+
+## 3️⃣ 수정 과정 (어떻게 해결했는가)
+
+### 🧩 (1) Props & Callback 구조 정리
+
+| 구분 | 파일                      | 핵심 코드                                         | 설명                                          |
+| ---- | ------------------------- | ------------------------------------------------- | --------------------------------------------- |
+| 부모 | `SetMeetRoomCalendar.jsx` | `<SetMeetRoomModal onSaved={loadReservations} />` | 자식에게 함수 전달                            |
+| 자식 | `SetMeetRoomModal.jsx`    | `onSaved?.()`                                     | 저장 완료 후 부모의 `loadReservations()` 실행 |
+
+**결과:**  
+모달에서 저장/수정 후 자동으로 캘린더 데이터가 리로드되며,  
+등록 → 닫기 → 새 예약 표시까지 완전한 **단방향 데이터 플로우** 완성
+
+---
+
+### 🧩 (2) FullCalendar 주간 뷰 개선
+
+기존에는 `titleFormat={{ week: "numeric" }}` 으로  
+“12월 1주차” 형식으로 표시되었으나,  
+요구사항에 따라 **기간 표시(YYYY.MM.DD ~ YYYY.MM.DD)** 로 변경
+
+```js
+datesSet={(info) => {
+  const start = info.startStr.slice(0, 10).replace(/-/g, ". ");
+  const end = info.endStr.slice(0, 10).replace(/-/g, ". ");
+  setHeaderText(`${start} ~ ${end}`);
+}}
+```
