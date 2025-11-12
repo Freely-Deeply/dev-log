@@ -26,7 +26,6 @@ headerToolbar={{
   right: "next today dayGridMonth,timeGridWeek,timeGridDay",
 }}
 
-
 📂 수정 파일
 
 SetMeetRoomCalendar.jsx — headerToolbar 수정 (471~475줄)
@@ -48,7 +47,6 @@ slotMaxTime="22:00:00"
 slotMinTime="07:00:00"
 slotMaxTime="23:00:00"
 
-
 📂 수정 파일
 
 SetMeetRoomCalendar.jsx — slotMin/MaxTime 수정 (529~530줄)
@@ -65,19 +63,18 @@ TimeSelect.jsx — 주석 및 prop 예시 업데이트 (33~73줄)
 버튼 크기·색상 통일, 테두리 제거로 미니멀한 디자인 완성.
 
 .pagination button {
-  height: 38px;
-  min-width: 38px;
-  padding: .5rem .75rem;
-  border: 0 !important;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #f3f5f7;
-  transition: background-color .2s ease;
+height: 38px;
+min-width: 38px;
+padding: .5rem .75rem;
+border: 0 !important;
+display: flex;
+align-items: center;
+justify-content: center;
+background: #f3f5f7;
+transition: background-color .2s ease;
 }
 .pagination button:hover { background: #c0d7ec; }
 .pagination button[aria-current="page"] { background: #4787F3; color: #fff; }
-
 
 📂 수정 파일
 
@@ -97,9 +94,8 @@ fc- 접두어 클래스 : FullCalendar 내부 클래스 (덮어쓰기용, !impor
 일반 클래스 : JSX 내 직접 작성한 요소 (자유롭게 제어, !important 지양)
 
 .calendar-container .fc-toolbar-chunk:first-child {
-  margin-right: .5rem !important;
+margin-right: .5rem !important;
 }
-
 
 📊 개선 효과 요약
 
