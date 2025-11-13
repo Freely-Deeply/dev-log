@@ -1,17 +1,28 @@
-📘 2025-11-12 | 회의실 예약 페이지 UI/UX 개선 — 툴바 재배치 · 시간 확장 · 페이지네이션 리디자인
+# 🏢 2025-11-12 — 회의실 예약 페이지 UI/UX 개선
 
-🎯 작업 목표
+**툴바 재배치 · 회의실 사용 시간 확장 · 공통 페이지네이션 리디자인**
+
+## 🎯 작업 목표
+
 FullCalendar 기반 회의실 예약 페이지에서
-날짜 중심 툴바 재배치, 사용 가능 시간 확장(07–23시),
-공통 페이지네이션 디자인 통일로 UI 일관성과 사용 편의성을 높인다.
 
-✅ 오늘 완료한 작업
+- 날짜 중심 툴바 재배치
+- 사용 가능 시간 확대(07–23시)
+- 공통 페이지네이션 UI 통일
 
-1️⃣ 날짜 양옆으로 Prev / Next 버튼 배치
+로 전체 화면 흐름과 사용성을 개선한다.
 
-날짜(Title)를 중심으로 Prev·Next·Today를 배치하고,
-뷰 전환 버튼(Day/Week/Month)은 오른쪽 끝으로 유지.
+---
 
+## ✅ 오늘 완료한 작업
+
+### 🔵 1. 날짜 양옆으로 Prev / Next 버튼 배치
+
+날짜(Title)를 중심으로 한 양옆 배치는 "캘린더라는 컨텍스트"를 직관적으로 느끼게 하는 핵심 UI.
+
+**✔ 변경 내용**
+
+```javascript
 // Before
 headerToolbar={{
   left: "prev,next today",
@@ -25,20 +36,26 @@ headerToolbar={{
   center: "title",
   right: "next today dayGridMonth,timeGridWeek,timeGridDay",
 }}
+```
 
-📂 수정 파일
+**📂 수정 파일**
+- `SetMeetRoomCalendar.jsx` (471–475줄)
+- `SetMeetRoomCalendar.css` (24–72줄)
 
-SetMeetRoomCalendar.jsx — headerToolbar 수정 (471~475줄)
+**⭐ 결과**
+- 날짜를 중앙에 고정
+- Prev / Next / Today가 날짜 기준 양옆 자연스러운 흐름으로 배치
+- 뷰 전환(Day/Week/Month)은 오른쪽 끝으로 유지
 
-SetMeetRoomCalendar.css — .fc-toolbar 레이아웃 수정 (24~72줄)
+---
 
-📈 결과
-날짜를 중심으로 양옆 버튼이 정렬되어, Prev / Next / Today 버튼의 시선 흐름이 자연스러워졌다.
+### 🔵 2. 회의실 사용 시간대 확대 (07:00 ~ 23:00)
 
-2️⃣ 회의실 사용 시간대 확대 (07:00~23:00)
+기존 08~22시로 제한되어 있던 시간대를 실제 운영 환경(조조·야간 회의)까지 확장.
 
-기존 08~22시에서 07~23시로 확대하여 야간 회의·조조 회의 수요 반영.
+**✔ 변경 내용**
 
+```javascript
 // Before
 slotMinTime="08:00:00"
 slotMaxTime="22:00:00"
@@ -46,78 +63,77 @@ slotMaxTime="22:00:00"
 // After
 slotMinTime="07:00:00"
 slotMaxTime="23:00:00"
+```
 
-📂 수정 파일
+**📂 수정 파일**
+- `SetMeetRoomCalendar.jsx` (529–530줄)
+- `SetMeetRoomModal.jsx` (617–637줄)
+- `TimeSelect.jsx` (주석/예시 업데이트)
 
-SetMeetRoomCalendar.jsx — slotMin/MaxTime 수정 (529~530줄)
+**⭐ 효과**
+- 캘린더 표시 + 모달 선택 가능 시간대 완전 일치
+- UI·UX 일관성 확보
 
-SetMeetRoomModal.jsx — minHour/maxHour 07~23 적용 (617~637줄)
+---
 
-TimeSelect.jsx — 주석 및 prop 예시 업데이트 (33~73줄)
+### 🔵 3. 페이지네이션 UI 개선 (전역 적용)
 
-효과
-캘린더·모달 모두 07–23시만 선택 가능, UX 일관성 향상.
+테두리 제거 + 색상 통일 + 크기 통일 → 미니멀하고 시각적으로 균형 잡힌 버튼 UI.
 
-3️⃣ 페이지네이션 UI 개선
+**✔ 핵심 CSS**
 
-버튼 크기·색상 통일, 테두리 제거로 미니멀한 디자인 완성.
-
+```css
 .pagination button {
-height: 38px;
-min-width: 38px;
-padding: .5rem .75rem;
-border: 0 !important;
-display: flex;
-align-items: center;
-justify-content: center;
-background: #f3f5f7;
-transition: background-color .2s ease;
-}
-.pagination button:hover { background: #c0d7ec; }
-.pagination button[aria-current="page"] { background: #4787F3; color: #fff; }
-
-📂 수정 파일
-
-Pagination.css (신규 생성)
-
-Pagination.jsx (CSS import 추가)
-
-적용 범위
-직원관리 / 공지사항 / 공통 페이지네이션 전역
-
-📈 결과
-Hover·현재 페이지 색상 구분 명확, 크기·라인 통일된 버튼 UI 완성.
-
-🧱 Code Review Note
-
-fc- 접두어 클래스 : FullCalendar 내부 클래스 (덮어쓰기용, !important 사용 가능)
-일반 클래스 : JSX 내 직접 작성한 요소 (자유롭게 제어, !important 지양)
-
-.calendar-container .fc-toolbar-chunk:first-child {
-margin-right: .5rem !important;
+  height: 38px;
+  min-width: 38px;
+  padding: .5rem .75rem;
+  border: 0 !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f3f5f7;
+  transition: background-color .2s ease;
 }
 
-📊 개선 효과 요약
+.pagination button:hover {
+  background: #c0d7ec;
+}
 
-날짜 중심 툴바 구조로 조작 직관성 향상
+.pagination button[aria-current="page"] {
+  background: #4787F3;
+  color: #fff;
+}
+```
 
-시간대 확장(07–23시)으로 실제 사용성 개선
+**📂 수정 파일**
+- `Pagination.css`
+- `Pagination.jsx` (CSS import)
 
-Pagination 통일로 페이지 일관성 확보
+**⭐ 결과**
+- Hover / 선택된 페이지 분리도 향상
+- 버튼 높이·넓이·여백이 동일한 균형감 있는 UI
+- 공지·직원관리 등 모든 페이지에서 동일하게 작동
 
-🧠 다음 개선 포인트
+---
 
-Toolbar 반응형 레이아웃 (줄바꿈/축소 대응)
+## 🧱 Code Review Note — Notion 스타일 강조 요약
 
-예약 중복 시간 표시 (색상·툴팁)
+**✔ FullCalendar 클래스(`fc-xxxx`)**
+- 라이브러리에서 제공
+- `!important` 사용 가능
+- 스타일 덮어쓰기로 커스터마이징
 
-Pagination 비활성 컬러 정의
+**✔ 우리가 만든 클래스**
+- JSX 내부 작성
+- 마음대로 수정 가능
+- 되도록 `!important`는 지양
 
-📝 한 줄 요약
+---
 
-“날짜 중심 · 넓어진 시간대 · 깔끔한 페이지네이션 — 오늘은 진짜 ‘UI 구조’를 다듬은 날.”
+## 📊 개선 효과 요약
 
-📅 작업일 : 2025-11-12
-👩‍💻 작업자 : 개발자
-📌 상태 : ✅ 완료
-
+| 구분 | 개선 전 | 개선 후 |
+|------|---------|---------|
+| **툴바 배치** | Prev/Next/Today 한 덩어리로 왼쪽 | 날짜 중심 양옆 배치로 시선 자연스러움 |
+| **시간 범위** | 08–22시 | 07–23시 확장 |
+| **Pagination** | 테두리·크기 불규칙 | 미니멀 + 통일된 버튼 UI |
