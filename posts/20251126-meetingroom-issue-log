@@ -1,0 +1,179 @@
+# 🧠 React 핵심 개념 정리 — Props, Callback, useCallback
+
+## 📌 Props VS Callback
+
+### 💬 기억 문장
+
+> "Props는 부모가 준 선물,  
+> Callback은 그중 '부모에게 연락하는 버튼'이다."
+
+---
+
+## 💡 Props란?
+
+**부모 컴포넌트가 자식에게 주는 값**  
+→ "읽기 전용 데이터 전달용"
+```jsx
+
+```
+
+- `"안녕"`이 바로 **props**
+- 자식은 읽기만 가능, 직접 수정은 ❌
+
+---
+
+## 💡 Callback이란?
+
+**"나중에 실행할 함수" — 특히 부모가 넘겨준 함수**  
+→ 자식이 필요할 때 그 함수를 실행함
+```jsx
+
+```
+
+- 부모가 `loadReservations`를 넘겨주면
+- ✅ 저장 버튼 클릭 시 → `onSaved()` 실행 → 부모의 `loadReservations()` 호출됨
+
+---
+
+## ⚙️ 정리 흐름
+```
+[부모] SetMeetRoomCalendar
+ ├── loadReservations() 정의   ← 서버에서 예약 목록을 다시 불러오는 함수
+ └── <SetMeetRoomModal onSaved={loadReservations} />  ← 자식에게 props로 전달
+
+      ↓ props 전달 ↓
+
+[자식] SetMeetRoomModal
+ └── handleSubmit() 내부에서 onSaved() 실행  
+       → 부모의 loadReservations() 실행됨  
+       → 캘린더 새로고침 (새로운 예약 반영)
+```
+
+---
+
+## 📌 개념 요약
+
+### Prop
+
+- 컴포넌트나 라이브러리에 **"값을 전달하는 통로"**
+- 숫자, 문자열, 배열, 객체, 함수 무엇이든 전달 가능
+- 즉, **'설정값'** 또는 **'옵션'**이라고 보면 됨
+
+### 콜백 함수 (Callback Function)
+
+- **"나중에 호출될 함수"**
+- 내가 직접 호출하는 게 아니라, 시스템(또는 라이브러리)이 특정 이벤트/상황에서 불러줌
+- 예: FullCalendar가 요일 헤더를 그릴 때 `dayHeaderContent(arg)`를 내부적으로 호출함
+
+### 둘의 관계
+
+- `dayHeaderContent`는 **'Prop로 전달된 콜백 함수'**
+- 즉, **Prop = 전달 방법** / **Callback = 전달된 함수 자체**
+
+---
+
+## 💡 저장 클릭: 한 문장 요약 흐름
+
+> 저장 클릭  
+> → `handleSubmit()` 실행  
+> → `API 등록/수정 요청`  
+> → 성공 시 `onSaved()`로 부모 호출  
+> → 부모의 `loadReservations()`로 캘린더 갱신  
+> → 모달 닫힘 ✅
+
+---
+
+## 📘 페이지 진입 → 저장 클릭까지 전체 흐름
+
+| 순서 | 파일명 | 실행 함수·키워드 | 하는 일 (왜 필요한가) |
+|------|--------|------------------|----------------------|
+| 1 | `routes/index.jsx` → `SetMeetRoom.jsx` | 라우팅 → 페이지 마운트 | 회의실 예약 페이지로 진입 |
+| 2 | `SetMeetRoomCalendar.jsx` | `SetMeetRoomCalendar` 마운트 | 캘린더 컴포넌트 렌더 준비 |
+| 3 | `SetMeetRoomCalendar.jsx` | `useEffect(loadReservations)` | 최초 예약 목록 조회 트리거 |
+| 4 | `setMeetRoomApi.js` | `getMeetroomInfo()` | 서버에서 예약 리스트 GET |
+| 5 | `SetMeetRoomCalendar.jsx` | `setEvents(...)` | FullCalendar에 이벤트 세팅 |
+| 6 | `SetMeetRoomCalendar.jsx` | `datesSet` (현재 보이는 기간 반영) | 상단 표시용 `currentDate` 갱신 (주차 계산 등) |
+| 7-a | `SetMeetRoomCalendar.jsx` | `handleNewReservation()` (상단 버튼) | 등록 모달 열기용 상태 세팅 (오늘 날짜/시간 기본) |
+| 7-b | `SetMeetRoomCalendar.jsx` | `select` → `handleDateSelect(info)` (빈 칸 드래그) | 선택한 날짜/시간을 `initialDate/initialTime`으로 설정 |
+| 8 | `SetMeetRoomCalendar.jsx` | `setModal({ open:true, mode:"register" })` | 모달 오픈 + 등록모드로 진입 |
+| 9 | `SetMeetRoomModal.jsx` | `SetMeetRoomModal` 렌더 | 폼 컴포넌트 뜸 |
+| 10 | `SetMeetRoomModal.jsx` | `useEffect`(open 변동) | 드롭다운 데이터 로드 및 폼 초기값 세팅 |
+| 11 | `setMeetRoomApi.js` | `getEmployeeList()`, `getSiteList()` | 예약자/사이트 셀렉트 옵션 로드 |
+| 12 | `SetMeetRoomModal.jsx` | 폼 입력 상태(`useState`) 변화 | 사용자가 사이트/일자/시간/제목/상세/예약자 입력 |
+| 13 | `useMeetRoomFormValidation.js` | `validateField()`, `validateForm()` | 필수값·시간범위 등 유효성 체크 |
+| 14 | `SetMeetRoomModal.jsx` | **저장 버튼 `onClick={handleSubmit}`** | 최종 저장 시도 (여기까지가 "저장 클릭") |
+
+**저장 후 처리:**
+
+- `registerMeetroomInfo(body)` (등록) 또는 `updateMeetroomInfo(body)` (수정) 호출
+- 성공 시 `onSaved()`로 부모에게 알림 → 캘린더 재조회
+
+---
+
+## 💡 useCallback: 함수 재생성 & 실행 타이밍
+
+### ✔️ 두 개념의 정확한 차이
+
+#### 1) "deps가 바뀔 때만 함수를 새로 만듦"
+
+**무대(배경):** 렌더링(컴포넌트 실행 시점)
+
+**설명:**
+
+`useCallback`은 *"이 함수 객체 자체를 새로 만들지 말고, deps 배열이 바뀔 때만 새로 만들어라"* 라는 뜻
+
+- 함수 **정의 자체**가 다시 생성되는 시점
+- 렌더링 성능 최적화 목적
+- "언제 함수가 **만들어지는가**"에 대한 이야기
+
+👉 **함수가 생성되는 타이밍을 제어하는 역할**
+
+---
+
+#### 2) "deps가 바뀌면 callback 실행됨"
+
+**무대(배경):** 함수 호출 시점
+
+**설명:**
+
+deps가 바뀌었다고 해서 `callback` 함수가 자동 실행되는 건 **아님**
+
+→ 실행은 **개발자가 호출할 때만** 실행됨
+
+- deps는 실행 타이밍을 결정하지 않음
+- 단지 "새 함수로 교체할지, 기존 함수 메모리를 재사용할지"만 결정할 뿐
+
+👉 **실행 여부는 deps와 무관 → 호출해야 실행됨**
+
+---
+
+### ✔️ 간단 비교 요약
+
+| 문장 | 뜻 | 시점 | 포커스 |
+|------|-----|------|--------|
+| **deps가 바뀔 때만 함수를 새로 만듦** | 새로운 함수 객체 생성 | 렌더링 시 | "함수 생성 타이밍" |
+| **deps가 바뀌면 callback 실행됨** | ❌ 틀린 문장 (deps는 실행을 발생시키지 않음) | 실행 시 | "함수 호출 여부"는 deps와 무관 |
+
+---
+
+### ✔️ 쉽게 비유
+
+### 📌 useCallback은 "전화번호 저장 시스템"
+
+- **useCallback 함수 자체** = 전화번호
+- **deps** = 연락처 수정할 기준
+
+#### 1) deps가 바뀌면 "전화번호 새로 저장됨"
+
+→ 번호 변경됨 (새 함수 생성)
+
+#### 2) 실행은?
+
+→ 전화를 **내가 걸 때만** 됨  
+→ deps가 바뀌었다고 전화가 자동으로 걸리진 않음
+
+---
+
+## 📝 한 줄 요약
+
+**"Props는 데이터 전달, Callback은 부모에게 알리는 함수, useCallback은 함수 재생성 최적화."**
